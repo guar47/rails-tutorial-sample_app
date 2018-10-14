@@ -2,7 +2,7 @@ require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user       = users(:michael)
+    @user = users(:michael)
     @other_user = users(:archer)
   end
 
@@ -42,7 +42,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_as(@other_user)
     assert_not @other_user.admin?
     patch user_path(@other_user), params: {
-        user: { password:              User.digest('password'),
+        user: { password: User.digest('password'),
                 password_confirmation: User.digest('password'),
                 admin: 1 } }
     assert_not @other_user.admin?
@@ -61,5 +61,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       delete user_path(@user)
     end
     assert_redirected_to root_url
+  end
+
+  test "should redirect following when not logged in" do
+    get following_user_path(@user)
+    assert_redirected_to login_url
+  end
+
+  test "should redirect followers when not logged in" do
+    get followers_user_path(@user)
+    assert_redirected_to login_url
   end
 end
